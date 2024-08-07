@@ -5,16 +5,17 @@ const User = require("../models/user"); // Corrected from Product to User
 
 // Register
 exports.register = async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, name, role } = req.body;
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User({ username, password: hashedPassword });
+        const user = new User({ username, password: hashedPassword, name, role });
         await user.save();
         res.status(201).send("User registered");
     } catch (err) {
         res.status(400).send(err.message);
     }
 };
+
 
 // Login
 exports.login = async (req, res) => {
@@ -35,7 +36,7 @@ exports.login = async (req, res) => {
             { userId: user._id },
             process.env.REFRESH_TOKEN_SECRET
         );
-        res.json({ accessToken, refreshToken });
+        res.json({ user, accessToken, refreshToken });
     } catch (err) {
         res.status(500).send(err.message);
     }
